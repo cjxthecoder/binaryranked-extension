@@ -1,6 +1,60 @@
-# BinaryRanked Skill Chart Extension
+# BinaryRanked Utility Extension
 
-A Chrome extension that overlays a 9-gon radar/skill chart on the BinaryRanked game site, visualizing your personal best performance across all 9 game modes.
+A Chrome extension that enhances the BinaryRanked experience with:
+
+- 📊 Skill chart overlay  
+- 📈 Average (Ao5 / session) tracking  
+- 🌍 Easy-to-view global ranks  
+- 🎛 Button customization  
+- ⚡ Quality-of-life improvements  
+
+Designed to stay lightweight and unobtrusive while adding meaningful competitive insight.
+
+---
+
+## Features
+
+### 📊 9-Mode Skill Radar Chart
+
+Visualizes your performance across all game modes using a radar chart overlay.
+
+The chart converts your personal bests into normalized skill scores relative to competitive benchmarks.
+
+---
+
+### 📈 Average Tracking
+
+- Displays recent Ao5 breakdowns  
+- Properly handles DNFs  
+- Marks best and worst solves  
+- Helps track consistency trends  
+
+Built to reflect actual competitive averaging behavior.
+
+---
+
+### 🌍 Global Rank Viewer
+
+Quickly view your global rank in each mode without navigating away from the main interface.
+
+Optimized for fast comparison and readability.
+
+---
+
+### 🎛 UI Customization
+
+- Toggle overlay visibility  
+- Adjust button placement  
+- Clean, minimal styling  
+- Designed to blend naturally with the native UI  
+
+---
+
+### ⚡ Quality-of-Life Enhancements
+
+Small interface refinements that make competitive play smoother and more informative without disrupting gameplay.
+
+---
 
 ## Game Modes Covered
 
@@ -16,39 +70,52 @@ A Chrome extension that overlays a 9-gon radar/skill chart on the BinaryRanked g
 | Split       | 8×(2×4)       |
 | Consistency | 12×8          |
 
-## How Skill Score Is Calculated
+---
 
-Each mode has a time based on the WR time, top 5% time, or top 10% time. Your personal best is converted to a **0–1 skill score** using:
+## Skill Score Formula
+
+Each personal best is converted to a normalized skill score:
 
 ```
-score = min(standard_time / your_pb_time, 1.0)
+score = min(benchmark_time / your_pb_time, 1.0)
 ```
 
-- Beat the time → score = 1.0
-- 2x slower → score = 0.5
-- No PB yet → "—"
+- Faster than benchmark → 1.0  
+- Slower → proportional score  
+- No PB → not shown  
+
+Benchmarks are based on competitive reference times.
+
+---
 
 ## Installation (Developer Mode)
 
 1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable **Developer mode** (top-right toggle)
+2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select this folder (`binaryranked-extension/`)
-5. Navigate to [BinaryRanked](https://devcamp.studio/playground/champ/binary-online_game/)
-6. Click the **📊 Skill Chart** button in the bottom-right corner
+4. Select the extension folder
+5. Open BinaryRanked in your browser
+6. Use the extension controls directly within the game page
+
+---
 
 ## Project Structure
 
 ```
 binaryranked-extension/
-├── manifest.json      — Extension metadata & permissions
-├── content.js         — Injected into BinaryRanked page; reads PBs & renders chart
-├── skill-chart.css    — Overlay styles (dark gaming aesthetic)
-├── popup.html         — Extension popup UI
-├── popup.js           — Popup logic
-└── README.md          — This file
+├── manifest.json
+├── content.js
+├── skill-chart.css
+├── popup.html
+├── popup.js
+└── README.md
 ```
 
-## Next Steps / Ideas
+---
 
-- **Export** chart as PNG via canvas
+## Future Ideas
+
+- Expanded session statistics panel  
+- Exportable performance history  
+- Additional visual themes  
+- Advanced consistency metrics

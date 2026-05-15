@@ -63,7 +63,7 @@ const WR_TIMES = {
   "zebra":        1.228,
   "2step":        1.485,
   "split":        0.838,
-  "consistency":  3.007,
+  "consistency":  2.994,
 };
 
 // Reference elite times (seconds, top 5%)
@@ -362,7 +362,7 @@ function initRunTracker() {
         if (!isNaN(time)) {
           appendRun(trackedMode, time);
           const newBest = updateBestAvg(trackedMode);
-          console.log("Displayed newBest: ", newBest);
+          // console.log("Displayed newBest: ", newBest);
           const grid = document.querySelector("#success-modal .grid.grid-cols-2.gap-4.mb-6");
           if (grid) {
             if (newBest !== false) {
@@ -374,7 +374,7 @@ function initRunTracker() {
                 notice.style.color = "#facc15";
                 grid.appendChild(notice);
               }
-              notice.textContent = newBest !== false ? `New ${label.toLowerCase()} average best of ${newBest.toFixed(3)}s!` : "";
+              notice.textContent = newBest !== false ? `New ${label ? label.toLowerCase() : "custom"} average best of ${newBest.toFixed(3)}s!` : "";
             } else {
               const notice = grid?.querySelector(".br-avg-best-notice");
               if (notice) notice.textContent = "";
@@ -435,22 +435,26 @@ function updateBestAvg(mode) {
   const activeMode = detectActiveMode();
   const history = getRunHistory();
   const lessThan5 = history.length < 5;
-  console.log("Less than 5: ", lessThan5);
+  // console.log("Less than 5: ", lessThan5);
   if (history.length < 5) return false;
 
   const last5 = history.slice(-5);
   const allSameMode = last5.every(r => r.mode === last5[0].mode);
-  console.log("All same mode: ", allSameMode);
+  // console.log("All same mode: ", allSameMode);
   if (!allSameMode || last5[0].mode !== activeMode) return false;
 
   const avg = computeAo5(last5);
-  console.log("Average: ", avg);
+  // console.log("Average: ", avg);
   if (avg === null) return false;
 
-  const best = parseFloat(localStorage.getItem(`bestAvg_${mode}`)) || Infinity;
-  console.log(avg, " < ", best, ": ", avg < best);
+  const stored = localStorage.getItem(`bestAvg_${mode}`);
+  const best = stored ? JSON.parse(stored).time : Infinity;
+  // console.log(avg, " < ", best, ": ", avg < best);
   if (avg < best) {
-    localStorage.setItem(`bestAvg_${mode}`, avg);
+    localStorage.setItem(`bestAvg_${mode}`, JSON.stringify({
+      time: avg,
+      runs: last5.map(r => r.time ?? null),
+    }));
     return avg;
   }
   return false;
@@ -462,10 +466,8 @@ function isDuplicateDnf(mode) {
   return lastTwo.length === 2 && lastTwo.every(r => r.mode === mode && r.time === null);
 }
 
-function getCurrentAo5Display() {
+function getCurrentAo5Display(last5) {
   const activeMode = detectActiveMode();
-  const history = getRunHistory();
-  const last5 = history.slice(-5);
 
   if (last5.length < 5) return "-";
 
@@ -477,26 +479,25 @@ function getCurrentAo5Display() {
   return avg !== null ? avg.toFixed(3) : "-";
 }
 
-function getAo5Breakdown() {
+function getAo5Breakdown(last5) {
   const activeMode = detectActiveMode();
-  const history = getRunHistory();
-  const last5 = history.slice(-5);
-
   if (last5.length < 5 || !last5.every(r => r.mode === activeMode)) return null;
-
   const times = last5.map(r => r.time === null ? Infinity : r.time);
-  const minTime = Math.min(...times);
-  const maxTime = Math.max(...times);
+  return getAo5BreakdownFromTimes(times);
+}
+
+function getAo5BreakdownFromTimes(last5Times) {
+  const minTime = Math.min(...last5Times);
+  const maxTime = Math.max(...last5Times);
 
   let minMarked = false;
   let maxMarked = false;
 
-  const parts = last5.map(r => {
-    const isDnf = r.time === null;
-    const value = isDnf ? Infinity : r.time;
-    const text = isDnf ? "DNF" : r.time.toFixed(3);
-    const isMin = !minMarked && value === minTime;
-    const isMax = !maxMarked && value === maxTime;
+  const parts = last5Times.map(t => {
+    const isDnf = t === null || t === Infinity;
+    const text = isDnf ? "DNF" : t.toFixed(3);
+    const isMin = !minMarked && t === minTime;
+    const isMax = !maxMarked && t === maxTime;
     if (isMin) minMarked = true;
     if (isMax) maxMarked = true;
     return (isMin || isMax) ? `(${text})` : text;
@@ -760,7 +761,7 @@ function buildRankingsPanel() {
     return `
       <div class="br-lb-row">
         <span class="br-lb-event" style="color: ${MODES.find(m => m.lsKey === mode.lsKey)?.color}">${mode.label}</span>
-        <span class="br-lb-time" style="color: ${rank === 1 ? "#ff0000" : MODES.find(m => m.lsKey === mode.lsKey)?.textColor}">${time.toFixed(3)}</span>
+        <span class="br-lb-time" style="color: ${rank === 1 ? "#ff0000" : MODES.find(m => m.lsKey === mode.lsKey)?.textColor}">${time.toFixed(3) + "s"}</span>
         <span class="br-lb-rank" style="color: ${MODES.find(m => m.lsKey === mode.lsKey)?.textColor}">${rankToDisplay(rank)}</span>
       </div>
     `;
@@ -798,9 +799,10 @@ function refreshRankings() {
 function buildAveragePanel() {
   const activeMode = detectActiveMode();
   const history = getRunHistory();
-  const activeModeLabel = MODES_LIST.find(m => m.lsKey === activeMode)?.label ?? "—";
-  const ao5 = getCurrentAo5Display(activeMode);
-  const ao5breakdown = ao5 === "-" ? "" : getAo5Breakdown();
+  const last5 = history.slice(-5);
+  const activeModeLabel = MODES_LIST.find(m => m.lsKey === activeMode)?.label ?? "custom";
+  const ao5 = getCurrentAo5Display(last5);
+  const ao5breakdown = ao5 === "-" ? "" : getAo5Breakdown(last5);
 
   // Top section
   const topSection = `
@@ -816,7 +818,7 @@ function buildAveragePanel() {
         </div>
         <div class="br-avg-history-list">
           ${[...history].reverse().map(r => {
-            const label = MODES_LIST.find(m => m.lsKey === r.mode)?.label ?? r.mode;
+            const label = MODES_LIST.find(m => m.lsKey === r.mode)?.label ?? "custom";
             const time  = r.time !== null ? r.time.toFixed(3) : "DNF";
             const isDnf = r.time === null;
             return `
@@ -835,13 +837,17 @@ function buildAveragePanel() {
   const currentCardOrder = getCurrentStatCardOrder();
   const grid = currentCardOrder.map(statId => {
     const lsKey = statId.replace("stat-best-", "");
-    const avg = parseFloat(localStorage.getItem(`bestAvg_${lsKey}`));
     const mode = MODES_LIST.find(m => m.lsKey === lsKey);
+    const storedAvg = JSON.parse(localStorage.getItem(`bestAvg_${mode.lsKey}`));
+
+    const avg = storedAvg ? parseFloat(storedAvg.time) : null;
+    const title = storedAvg ? getAo5BreakdownFromTimes(storedAvg.runs) : "";
     const colors = STAT_CARD_COLORS[mode?.colorType] ?? {};
+
     return `
-      <div class="br-avg-card ${colors.border ?? ""} ${colors.bg ?? ""}">
-        <span class="br-avg-card-label ${colors.label ?? ""}">${mode?.label ?? lsKey}</span>
-        <span class="br-avg-card-value ${colors.value ?? ""}">${avg ? avg.toFixed(3) : "—"}</span>
+      <div class="br-avg-card ${colors.border ?? ""} ${colors.bg ?? ""}" title="${title}">
+        <span class="br-avg-card-label ${colors.label ?? ""}">avg ${mode?.label ?? lsKey}</span>
+        <span class="br-avg-card-value ${colors.value ?? ""}">${avg ? avg.toFixed(3) + "s" : "—"}</span>
       </div>
     `;
   }).join("");
