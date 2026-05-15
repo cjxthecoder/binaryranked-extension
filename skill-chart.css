@@ -1,0 +1,523 @@
+/* BinaryRanked Skill Chart Extension Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────────────────────── */
+:root {
+  --chart-bg:       #0f172a;
+  --chart-boxbg:    #12151d;
+  --chart-border:   #2a2f3f;
+  --chart-fill:     #06b6d4;
+  --chart-grid:     #8899aa;
+  --chart-ui:       #0e67db;
+  --chart-hover:    #ccd8f6;
+  --chart-ava:      #8890a4;
+  --chart-muted:    #666c7b;
+  --chart-header:   #1e293b;
+}
+
+/* ── Toggle Button ─────────────────────────────────────────────────── */
+#br-skill-chart-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99998;
+  background: var(--chart-boxbg);
+  color: var(--chart-ui);
+  border: 1px solid var(--chart-ui);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.1s, box-shadow 0.1s, transform 0.1s;
+  user-select: none;
+}
+
+#br-skill-chart-btn:hover {
+  background: rgba(18, 21, 29, 0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+#br-skill-chart-btn:active {
+  background: rgba(18, 21, 29, 0.3);
+  transform: translateY(0);
+}
+
+/* ── Overlay Backdrop ──────────────────────────────────────────────── */
+#br-skill-chart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+#br-skill-chart-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────── */
+.br-chart-panel {
+  background: var(--chart-bg);
+  border: 1px solid var(--chart-border);
+  border-radius: 12px;
+  box-shadow:
+    0 0 40px rgba(14, 103, 219, 0.3),
+    0 24px 64px rgba(0, 0, 0, 0.6);
+  width: 480px;
+  max-width: 96vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+#br-skill-chart-overlay.visible .br-chart-panel {
+  transform: translateY(0) scale(1);
+}
+
+/* ── Header ────────────────────────────────────────────────────────── */
+.br-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chart-header);
+  border-bottom: 1px solid var(--chart-border);
+  padding: 12px 16px;
+  text-transform: uppercase;
+}
+
+.br-chart-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--chart-ui);
+  text-shadow: 0 0 10px rgba(14, 103, 219, 0.3);
+}
+
+.br-chart-close {
+  background: none;
+  border: none;
+  color: var(--chart-ava);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+
+.br-chart-close:hover {
+  background: rgba(14, 103, 219, 0.2);
+  color: var(--chart-hover);
+}
+
+.br-chart-close:active {
+  background: rgba(14, 103, 219, 0.3);
+}
+
+/* ── Body (chart) ──────────────────────────────────────────────────────────── */
+.br-chart-body {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  padding: 16px 32px;
+  gap: 20px;
+}
+
+.br-chart-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--chart-ava);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+
+.br-chart-nav:hover {
+  background: rgba(14, 103, 219, 0.2);
+  color: var(--chart-hover);
+}
+
+.br-chart-nav:active {
+  background: rgba(14, 103, 219, 0.3);
+}
+
+.br-chart-nav:disabled {
+  color: var(--chart-muted);
+  cursor: default;
+  pointer-events: none;
+}
+
+#br-chart-prev { left: 12px; }
+#br-chart-next { right: 12px; }
+
+/* ── Body (leaderboard) ────────────────────────────────────────────────────────── */
+.br-lb-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+}
+
+.br-lb-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 8px;
+  border-bottom: 1px solid var(--chart-border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--ls-btn);
+  color: var(--chart-ui);
+  text-transform: uppercase;
+}
+
+.br-lb-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  letter-spacing: var(--ls-label);
+  transition: background var(--t-btn), border-color var(--t-btn);
+}
+
+.br-lb-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--chart-border);
+}
+
+.br-lb-event {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.br-lb-rank,
+.br-lb-time {
+  font-size: 12px;
+}
+
+.br-lb-empty,
+.br-lb-note {
+  font-size: 10px;
+  color: var(--chart-muted);
+  text-align: center;
+  padding: 12px;
+  letter-spacing: var(--ls-btn);
+}
+
+.br-lb-note {
+  border-top: 1px solid var(--chart-border);
+  margin-top: 4px;
+}
+
+/* ── Average Panel ─────────────────────────────────────────────────── */
+.br-avg-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.br-avg-top {
+  display: flex;
+  gap: 12px;
+  height: 240px;
+}
+
+.br-avg-current {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--chart-boxbg);
+  border: 1px solid var(--chart-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.br-avg-mode-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--chart-ui);
+}
+
+.br-avg-ao5-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--chart-ava);
+  letter-spacing: var(--ls-btn);
+  margin-top: 8px;
+}
+
+.br-avg-ao5-breakdown {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--chart-muted);
+  text-align: center;
+  margin-top: 8px;
+  letter-spacing: var(--ls-btn);
+}
+
+.br-avg-history {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--chart-boxbg);
+  border: 1px solid var(--chart-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.br-avg-history-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 8px;
+  border-bottom: 1px solid var(--chart-border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--ls-btn);
+  color: var(--chart-ui);
+  text-transform: uppercase;
+}
+
+.br-avg-history-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.br-avg-history-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--chart-border);
+  transition: background var(--t-btn);
+}
+
+.br-avg-history-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.br-avg-history-mode {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--chart-grid);
+}
+
+.br-avg-history-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--chart-grid);
+  text-align: right;
+}
+
+.br-avg-dnf {
+  color: var(--chart-muted);
+}
+
+/* ── Average Grid ──────────────────────────────────────────────────── */
+.br-avg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.br-avg-card {
+  border: 1px solid var(--chart-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.br-avg-card-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.br-avg-card-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+/* ── SVG Wrap ──────────────────────────────────────────────────────── */
+.br-chart-svg-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill-svg {
+  display: block;
+  overflow: visible;
+}
+
+.chart-dot {
+  transition: filter 0.1s;
+}
+
+.chart-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.br-chart-empty {
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  color: var(--chart-muted);
+  line-height: 1.6;
+  border: 1px dashed var(--chart-border);
+  border-radius: 8px;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.br-chart-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--chart-border);
+  padding: 12px 16px;
+  background: var(--chart-header);
+}
+
+.br-chart-refresh {
+  background: none;
+  border: 1px solid var(--chart-border);
+  color: var(--chart-ava);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: var(--ls-label);
+  transition: background 0.1s, color 0.1s;
+}
+
+.br-chart-refresh:hover {
+  background: rgba(14, 103, 219, 0.2);
+  color: var(--chart-hover);
+}
+
+.br-chart-refresh:active {
+  background: rgba(14, 103, 219, 0.3);
+}
+
+.br-chart-note {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--chart-ava);
+  letter-spacing: var(--ls-label);
+}
+
+.br-chart-select {
+  background: none;
+  border: 1px solid var(--chart-border);
+  color: var(--chart-ava);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: var(--ls-label);
+  outline: none;
+  transition: background 0.1s, color 0.1s;
+}
+
+.br-chart-select:hover {
+  background: rgba(14, 103, 219, 0.2);
+  color: var(--chart-hover);
+}
+
+.br-chart-select:active {
+  background: rgba(14, 103, 219, 0.3);
+}
+
+.br-chart-refresh:disabled,
+.br-chart-select:disabled {
+  color: var(--chart-muted);
+  border-color: var(--chart-border);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Respect page dark/light theme ────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  /* Keep dark panel regardless of OS theme since it's a gaming aesthetic */
+  #br-skill-chart-overlay,
+  .br-chart-panel { color-scheme: dark; }
+}
+
+/* ── Tooltip ───────────────────────────────────────────────────────── */
+.br-chart-tooltip {
+  position: absolute;
+  background: var(--chart-header);
+  border: 1px solid var(--chart-border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.br-chart-tooltip.visible {
+  opacity: 1;
+}
+
+.br-tooltip-mode {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--chart-ui);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.br-tooltip-time,
+.br-tooltip-score {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--chart-ava);
+}

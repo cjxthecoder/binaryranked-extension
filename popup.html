@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BinaryRanked Skill Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --chart-bg:       #0f172a;
+    --chart-boxbg:    #12151d;
+    --chart-border:   #2a2f3f;
+    --chart-ui:       #0e67db;
+    --chart-ava:      #8890a4;
+    --chart-muted:    #666c7b;
+    --chart-header:   #1e293b;
+  }
+
+  body {
+    width: 240px;
+    background: var(--chart-bg);
+    color: var(--chart-hover);
+    font-family: 'Rajdhani', sans-serif;
+    padding: 0;
+  }
+
+  .header {
+    background: var(--chart-header);
+    border-bottom: 1px solid var(--chart-border);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-icon { font-size: 20px; }
+
+  .header-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--chart-ui);
+    text-shadow: 0 0 10px rgba(47, 101, 212, 0.4);
+  }
+
+  .header-sub {
+    font-size: 10px;
+    color: var(--chart-ava);
+    margin-top: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .info-box {
+    background: var(--chart-boxbg);
+    border: 1px solid var(--chart-border);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--chart-ava);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+  }
+
+  .info-box strong { color: var(--chart-ui); }
+
+  .open-btn {
+    display: block;
+    width: 100%;
+    background: var(--chart-boxbg);
+    border: 1px solid var(--chart-border);
+    color: var(--chart-ui);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.1s, border-color 0.1s, box-shadow 0.1s, transform 0.1s;
+  }
+
+  .open-btn:hover {
+    background: rgba(18, 21, 29, 0.2);
+    border-color: var(--chart-ui);
+    box-shadow: 0 0 10px rgba(47, 101, 212, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .open-btn:active {
+    background: rgba(18, 21, 29, 0.3);
+    transform: translateY(0);
+  }
+
+  .disabled-btn {
+    display: block;
+    width: 100%;
+    background: var(--chart-boxbg);
+    border: 1px solid var(--chart-border);
+    color: var(--chart-muted);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: default;
+  }
+
+  .footer {
+    background: var(--chart-header);
+    border-top: 1px solid var(--chart-border);
+    padding: 8px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--chart-muted);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="header-icon">📊</span>
+  <div>
+    <div class="header-text">SKILL CHART</div>
+    <div class="header-sub">BinaryRanked Extension</div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="info-box">
+    Visualize your <strong>personal bests</strong> across all 9 game modes as a skill radar chart, along with your global rank and other statistics.<br><br>
+    Click the <strong>📊 Skill Chart</strong> button on the game page to open the overlay.
+  </div>
+
+  <div id="action-area">
+    <!-- Populated by popup.js -->
+  </div>
+</div>
+
+<div class="footer">v1.0.4 by Lesley330404</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "BinaryRanked Skill Chart",
+  "version": "1.0.4",
+  "description": "Skill chart overlay, easy-to-view global ranks, and other QOL fixes for Binary Ranked",
+  "permissions": [
+    "storage", "tabs", "scripting"
+  ],
+  "host_permissions": ["https://devcamp.studio/playground/champ/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://devcamp.studio/playground/champ/binary-online_game/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "skill-chart.css"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "BinaryRanked Skill Chart"
+  }
+}
