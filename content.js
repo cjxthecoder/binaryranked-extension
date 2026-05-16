@@ -285,7 +285,7 @@ function detectActiveMode() {
 // Get the current stat card order
 function getCurrentStatCardOrder() {
   const grid = document.querySelector("#career-stats-content .grid.grid-cols-3");
-  if (!grid) return [];
+  if (!grid) return STAT_CARD_ORDER;
   return [...grid.querySelectorAll(".stat-card")].map(card => {
     const valueEl = card.querySelector("[id^='stat-best-']");
     return valueEl?.id.replace("stat-best-", "") ?? null;
