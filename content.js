@@ -523,11 +523,20 @@ function parsePBsFromDOM() {
 
 // ---------------------------------------------------------------------------
 // Convert a raw time (seconds) to a 0–1 skill score
-// Higher = better. Uses comparisons to elite times.
+// Higher = better. Uses comparisons to a given time table.
 // ---------------------------------------------------------------------------
 function timeToScore(key, seconds, times) {
   const time = times[key] || 67;
   return Math.min(1, time / seconds);
+}
+
+// ---------------------------------------------------------------------------
+// Obtain the player rank color.
+// ---------------------------------------------------------------------------
+function getPlayerRankColor() {
+  const badge = document.getElementById("rank-badge");
+  if (!badge) return "#06b6d4";
+  return badge.style.backgroundColor || "#06b6d4";
 }
 
 // ---------------------------------------------------------------------------
@@ -553,6 +562,8 @@ function buildChartElement(values, pbs) {
     }).join(" ");
   }
 
+  fillColor = getPlayerRankColor();
+
   const outerPts = Array.from({ length: n }, (_, i) => point(i, 1.0));
 
   const innerPts = Array.from({ length: n }, (_, i) => {
@@ -577,7 +588,7 @@ function buildChartElement(values, pbs) {
   }).join("\n");
 
   const dots = innerPts.map((p, i) =>
-    `<circle class="chart-dot" data-index="${i}" cx="${p.x}" cy="${p.y}" r="5" fill="var(--chart-fill)" stroke="var(--chart-bg)" stroke-width="1.5"/>`
+    `<circle class="chart-dot" data-index="${i}" cx="${p.x}" cy="${p.y}" r="5" fill="${fillColor}" stroke="var(--chart-bg)" stroke-width="1.5"/>`
   ).join("\n");
 
   // Invisible larger hit circles for easier hovering
@@ -605,8 +616,8 @@ function buildChartElement(values, pbs) {
       </defs>
       ${rings}
       ${radialLines}
-      <polygon points="${innerPolyStr}" fill="var(--chart-fill)" opacity="0.25"/>
-      <polygon points="${innerPolyStr}" fill="none" stroke="var(--chart-fill)" stroke-width="2" filter="url(#glow)"/>
+      <polygon points="${innerPolyStr}" fill="${fillColor}" opacity="0.25"/>
+      <polygon points="${innerPolyStr}" fill="none" stroke="${fillColor}" stroke-width="2" filter="url(#glow)"/>
       ${dots}
       ${labels}
       ${hits}
