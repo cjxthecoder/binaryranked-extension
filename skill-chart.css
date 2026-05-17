@@ -167,8 +167,8 @@
   pointer-events: none;
 }
 
-#br-chart-prev { left: 12px; }
-#br-chart-next { right: 12px; }
+#br-chart-prev { left: 8px; }
+#br-chart-next { right: 8px; }
 
 /* ── Body (leaderboard) ────────────────────────────────────────────────────────── */
 .br-lb-wrap {
