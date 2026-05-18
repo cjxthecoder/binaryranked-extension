@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BinaryRanked Skill Chart",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Average tracker, skill chart overlay, easy-to-view global ranks, and other QOL fixes for BinaryRanked",
   "permissions": [
     "storage", "tabs", "scripting"
