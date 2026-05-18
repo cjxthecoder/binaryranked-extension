@@ -241,12 +241,12 @@
 
 .br-avg-top {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   height: 240px;
 }
 
 .br-avg-current {
-  flex: 0 0 120px;
+  flex: 0 0 130px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -405,7 +405,7 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: 14px;
   color: var(--chart-muted);
-  line-height: 1.6;
+  line-height: 1.5;
   border: 1px dashed var(--chart-border);
   border-radius: 8px;
 }
@@ -426,7 +426,7 @@
   color: var(--chart-ava);
   font-family: 'Share Tech Mono', monospace;
   font-size: 10px;
-  padding: 6px 12px;
+  padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
   letter-spacing: var(--ls-label);

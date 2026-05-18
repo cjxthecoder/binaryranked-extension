@@ -69,23 +69,23 @@ const WR_TIMES = {
 // Reference elite times (seconds, top 5%)
 const ELITE_TIMES = {
   "short":        1.822,
-  "classic":      4.118,
-  "long":         8.347,
+  "classic":      4.1,
+  "long":         8.371,
   "double":       4.118,
   "ultra":        18.21,
   "zebra":        4.395,
   "2step":        2.703,
-  "split":        4.248,
+  "split":        4.575,
   "consistency":  4.788,
 };
 
 // Reference strong times (seconds, top 10%)
 const STRONG_TIMES = {
-  "short":        1.984,
-  "classic":      4.431,
-  "long":         8.982,
-  "double":       5.425,
-  "ultra":        19.888,
+  "short":        1.988,
+  "classic":      4.427,
+  "long":         9.002,
+  "double":       5.415,
+  "ultra":        20.216,
   "zebra":        5.394,
   "2step":        4.46,
   "split":        5.659,
