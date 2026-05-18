@@ -241,12 +241,12 @@
 
 .br-avg-top {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   height: 240px;
 }
 
 .br-avg-current {
-  flex: 0 0 130px;
+  flex: 0 0 132px;
   display: flex;
   flex-direction: column;
   align-items: center;
