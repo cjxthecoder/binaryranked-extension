@@ -59,37 +59,37 @@ const WR_TIMES = {
   "classic":      2.652,
   "long":         5.829,
   "double":       2.244,
-  "ultra":        14.96,
-  "zebra":        1.228,
-  "2step":        1.485,
-  "split":        0.838,
-  "consistency":  2.994,
+  "ultra":        13.345,
+  "zebra":        2.233,
+  "2step":        2.227,
+  "split":        1.886,
+  "consistency":  2.735,
 };
 
 // Reference elite times (seconds, top 5%)
 const ELITE_TIMES = {
-  "short":        1.822,
-  "classic":      4.1,
-  "long":         8.371,
+  "short":        1.849,
+  "classic":      4.135,
+  "long":         8.347,
   "double":       4.118,
   "ultra":        18.21,
-  "zebra":        4.395,
-  "2step":        2.703,
-  "split":        4.575,
-  "consistency":  4.788,
+  "zebra":        4.449,
+  "2step":        3.406,
+  "split":        4.375,
+  "consistency":  4.843,
 };
 
 // Reference strong times (seconds, top 10%)
 const STRONG_TIMES = {
-  "short":        1.988,
-  "classic":      4.427,
+  "short":        1.993,
+  "classic":      4.45,
   "long":         9.002,
-  "double":       5.415,
+  "double":       5.425,
   "ultra":        20.216,
-  "zebra":        5.394,
-  "2step":        4.46,
-  "split":        5.659,
-  "consistency":  5.625,
+  "zebra":        5.432,
+  "2step":        4.492,
+  "split":        5.819,
+  "consistency":  5.67,
 };
 
 // Labels corresponding to each time table
@@ -295,40 +295,14 @@ function getCurrentStatCardOrder() {
 // ---------------------------------------------------------------------------
 // Leaderboard rank scraper
 // ---------------------------------------------------------------------------
-function scrapeLeaderboardRank() {
-  const tbody = document.getElementById("leaderboard-body");
-  if (!tbody) return;
-
-  const playerName = localStorage.getItem("lastPlayerNameCanonical");
-  if (!playerName) return;
-
-  // Detect current mode from localStorage or active tab
-  const activeMode = detectActiveMode();
-  if (!activeMode) return;
-
-  const rows = tbody.querySelectorAll("tr");
-  const total = rows.length;
-
-  rows.forEach(row => {
-    const cells = row.querySelectorAll("td");
-    if (cells.length < 2) return;
-
-    const rankCell = cells[0].textContent.trim();
-    const nameCell = cells[1].textContent.trim();
-
-    if (nameCell === playerName) {
-      // Convert medal emoji to number, or parse directly
-      let rank;
-      if (rankCell === "🥇") rank = 1;
-      else if (rankCell === "🥈") rank = 2;
-      else if (rankCell === "🥉") rank = 3;
-      else rank = parseInt(rankCell);
-
-      if (!isNaN(rank)) {
-        localStorage.setItem(`rankTotal_${activeMode}`, JSON.stringify({ rank, total }));
-      }
-    }
-  });
+function getRankFromStatCard(lsKey) {
+  const valueEl = document.getElementById(`stat-best-${lsKey}`);
+  if (!valueEl) return null;
+  const rankSpan = valueEl.querySelector("span.text-\\[9px\\]");
+  if (!rankSpan) return null;
+  const match = rankSpan.textContent.match(/#(\d+)\s*\(([^)]+)\)/);
+  if (!match) return null;
+  return { rank: parseInt(match[1]), pct: match[2] };
 }
 
 // ---------------------------------------------------------------------------
@@ -354,7 +328,7 @@ function initRunTracker() {
 
     if (!runInProgress) return;
 
-    if (text === "Success!") {
+    if (text === "Completed") {
       runInProgress = false;
       setTimeout(() => {
         const timeEl = document.getElementById("modal-time");
@@ -728,12 +702,17 @@ function refreshChart() {
     });
   } else {
     doubleValues = MODES.map(m => {
-      const raw = localStorage.getItem(`rankTotal_${m.lsKey}`);
-      if (!raw) return null;
-      const { rank, total } = JSON.parse(raw);
-      if (!total) return null;
-      // rank 1 → 1.0, last place → 1 / total (never quite 0)
-      return 1 - (rank - 1) / total;
+      const rankData = getRankFromStatCard(m.lsKey);
+      if (!rankData) return null;
+      const { rank, pct } = rankData;
+      // pct is like "9.0%" — convert to 0-1 score
+      // Lower percentile = better rank, so invert it
+      if (rank == 1) {
+        return 1;
+      } else {
+        const percentile = parseFloat(pct) / 100;
+        return 1 - percentile;
+      }
     });
   }
 
@@ -763,11 +742,11 @@ function rankToDisplay(rank) {
 function buildRankingsPanel() {
   const rows = MODES_LIST.map(mode => {
     const timeRaw = localStorage.getItem(`bestTime_${mode.lsKey}`);
-    const rankRaw = localStorage.getItem(`rankTotal_${mode.lsKey}`);
-    if (!timeRaw || !rankRaw) return null;
-
+    const rankData = getRankFromStatCard(mode.lsKey);
+    if (!timeRaw || !rankData) return null;
+    
+    const { rank, pct } = rankData;
     const time = parseFloat(timeRaw);
-    const { rank, total } = JSON.parse(rankRaw);
 
     return `
       <div class="br-lb-row">
@@ -792,7 +771,7 @@ function buildRankingsPanel() {
       </div>
       ${missingCount > 0 ? `
         <div class="br-lb-note">
-          ${missingCount} mode${missingCount > 1 ? "s" : ""} missing — visit each mode's leaderboard tab to populate.
+          ${missingCount} mode${missingCount > 1 ? "s" : ""} missing — wait for career stats to fully load to populate.
         </div>
       ` : ""}
     </div>
@@ -912,6 +891,6 @@ reorderStatCards();
 makeSpecialPatternsDraggable();
 makeStatCardsDraggable();
 
-const domObserver = new MutationObserver(scrapeLeaderboardRank);
+const domObserver = new MutationObserver(getRankFromStatCard);
 domObserver.observe(document.body, { childList: true, subtree: true });
 initRunTracker();
